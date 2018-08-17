@@ -1,14 +1,26 @@
 <?php
-$myfile = fopen("result.txt", "a+") or die("Unable to open file!");
-$html_string = file_get_contents('http://www.camaracolombo.pr.gov.br/inicial.asp');
-$dom = new DOMDocument();
-libxml_use_internal_errors(true);
-$dom->loadHTML($html_string);	
-libxml_clear_errors();
-$xpath = new DOMXpath($dom);
-$values = array();
-$row=$xpath->query('//p');
-foreach($row as $value) {
-    fwrite($myfile,trim($value->textContent));
+$file = fopen('sites.csv', 'r');
+while (($line = fgetcsv($file)) !== false)
+{
+  $sites[] = $line;
 }
-fclose($myfile);
+fclose($file);
+//var_dump($sites);
+//echo $sites[0][1];
+foreach ($sites as $site) {
+    //echo $site[0];
+    $tags = get_meta_tags($site[0]);
+
+    if(strlen($tags['keywords']) < 2){
+        $desc = explode(" ", $tags['description']);
+        $desc = implode(",", $desc);
+        echo $site[0].",".$desc."</br>";
+
+    }else{
+        echo $site[0].",".$tags['keywords']."</br>";
+    }
+   
+    
+    
+
+}
